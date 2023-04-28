@@ -21,10 +21,7 @@ public:
 
     [[maybe_unused]] Disconnector connect(Callable&& callable)
     {
-        CallableWrapper callableWrapper;
-        callableWrapper.callable = std::move(callable);
-        callableWrapper.id = idCounter;
-        callableWrappers.push_back(std::move(callableWrapper));
+        callableWrappers.emplace_back(std::move(callable), idCounter);
 
         const std::size_t disconnectId = idCounter++;
         return [this, disconnectId]() {
@@ -41,10 +38,7 @@ public:
 
     [[maybe_unused]] Disconnector connect(const Callable& callable)
     {
-        CallableWrapper callableWrapper;
-        callableWrapper.callable = callable;
-        callableWrapper.id = idCounter;
-        callableWrappers.push_back(std::move(callableWrapper));
+        callableWrappers.emplace_back(callable, idCounter);
 
         const std::size_t disconnectId = idCounter++;
         return [this, disconnectId]() {
@@ -62,14 +56,20 @@ public:
 private:
     struct CallableWrapper
     {
-        Callable callable;
-        std::size_t id;
-
+        CallableWrapper(Callable&& callable, std::size_t id) : callable(std::move(callable)), id(id)
+        {
+        }
+        CallableWrapper(const Callable& callable, std::size_t id) : callable(callable), id(id)
+        {
+        }
         template<typename... Args>
         void operator()(Args&&... args) const
         {
             callable(std::forward<Args>(args)...);
         }
+
+        Callable callable;
+        std::size_t id;
     };
     std::size_t idCounter = 0;
     std::deque<CallableWrapper> callableWrappers;
