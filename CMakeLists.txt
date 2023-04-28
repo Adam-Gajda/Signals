@@ -7,7 +7,5 @@ set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
 
 project(Signals)
 
-include_directories(.)
-
-add_subdirectory(src)
+add_executable(Signals example.cpp)
 
