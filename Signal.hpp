@@ -4,7 +4,7 @@
 #include <deque>
 #include <functional>
 
-using Disconnetor = std::function<void()>;
+using Disconnector = std::function<void()>;
 
 template<typename Callable>
 class Signal
@@ -19,9 +19,9 @@ public:
         }
     }
 
-    [[maybe_unused]] Disconnetor connect(Callable&& callable)
+    [[maybe_unused]] Disconnector connect(Callable&& callable)
     {
-        CallableWraper callableWrapper;
+        CallableWrapper callableWrapper;
         callableWrapper.callable = std::move(callable);
         callableWrapper.id = idCounter;
         callableWrappers.push_back(std::move(callableWrapper));
@@ -31,7 +31,7 @@ public:
             const auto it = std::find_if(callableWrappers.cbegin(),
               callableWrappers.cend(),
               [disconnectId](const auto& callableWrapper) { return callableWrapper.id == disconnectId; });
-            if (it == callableWrappers.end())
+            if (it == callableWrappers.cend())
             {
                 throw std::bad_function_call{};
             }
@@ -39,9 +39,9 @@ public:
         };
     }
 
-    [[maybe_unused]] Disconnetor connect(const Callable& callable)
+    [[maybe_unused]] Disconnector connect(const Callable& callable)
     {
-        CallableWraper callableWrapper;
+        CallableWrapper callableWrapper;
         callableWrapper.callable = callable;
         callableWrapper.id = idCounter;
         callableWrappers.push_back(std::move(callableWrapper));
@@ -51,7 +51,7 @@ public:
             const auto it = std::find_if(callableWrappers.cbegin(),
               callableWrappers.cend(),
               [disconnectId](const auto& callableWrapper) { return callableWrapper.id == disconnectId; });
-            if (it == callableWrappers.end())
+            if (it == callableWrappers.cend())
             {
                 throw std::bad_function_call{};
             }
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    struct CallableWraper
+    struct CallableWrapper
     {
         Callable callable;
         std::size_t id;
@@ -72,5 +72,5 @@ private:
         }
     };
     std::size_t idCounter = 0;
-    std::deque<CallableWraper> callableWrappers;
+    std::deque<CallableWrapper> callableWrappers;
 };

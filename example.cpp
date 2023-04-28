@@ -16,7 +16,7 @@ public:
     {
         disconnector();
     }
-    Disconnetor disconnector;
+    Disconnector disconnector;
 };
 
 struct Functor
