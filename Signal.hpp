@@ -1,8 +1,10 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <deque>
 #include <functional>
+#include <utility>
 
 using Disconnector = std::function<void()>;
 

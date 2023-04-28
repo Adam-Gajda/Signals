@@ -1,6 +1,7 @@
 #include "Signal.hpp"
 #include <functional>
 #include <iostream>
+#include <new>
 #include <string_view>
 
 inline Signal<std::function<void(std::string_view)>> signal;
