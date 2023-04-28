@@ -1,4 +1,4 @@
-# Simple-Signal-Lib
+# Signals
 
 Example:
 ```
