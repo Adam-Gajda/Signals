@@ -7,5 +7,5 @@ set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
 
 project(Signals)
 
-add_executable(Signals example.cpp)
+add_executable(Signals example.cpp SignalGuard.cpp)
 

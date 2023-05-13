@@ -1,4 +1,5 @@
 #include "Signal.hpp"
+#include "SignalGuard.hpp"
 #include <functional>
 #include <iostream>
 #include <new>
@@ -11,13 +12,9 @@ class Example
 public:
     Example()
     {
-        disconnector = signal.connect([this](std::string_view x) { std::cout << "Method: " << x << '\n'; });
+        signalGuard = signal.connect([this](std::string_view x) { std::cout << "Method: " << x << '\n'; });
     }
-    ~Example()
-    {
-        disconnector();
-    }
-    Disconnector disconnector;
+    SignalGuard signalGuard;
 };
 
 struct Functor
@@ -40,18 +37,18 @@ int main()
     };
     Example* example = new Example();
 
-    auto disconnectFunctor = signal.connect(Functor{});
+    SignalGuard functorGuard = signal.connect(Functor{});
     auto disconnectLambda = signal.connect([](std::string_view x) { std::cout << "Lambda: " << x << '\n'; });
     auto disconnectFunction = signal.connect(function);
     auto disconnectFunctionPtr = signal.connect(functionPtr);
     signal.emit("First Call");
 
     std::cout << "\nDisconnects\n\n";
-    disconnectFunctor();
+    functorGuard.disconnect();
     disconnectLambda();
     disconnectFunction();
 
-    // disconnectFunctor(); throw bad_function_call
+    // disconnectFunctor(); throws bad_function_call
     signal.emit("Second Call");
     std::cout << '\n';
     delete example;// Method disconnected

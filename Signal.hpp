@@ -1,5 +1,4 @@
 #pragma once
-
 #include <algorithm>
 #include <cstddef>
 #include <deque>
@@ -9,9 +8,16 @@
 using Disconnector = std::function<void()>;
 
 template<typename Callable>
-class Signal
+class Signal final
 {
 public:
+    Signal() = default;
+    ~Signal() = default;
+    Signal(const Signal&) = delete;
+    Signal& operator=(const Signal&) = delete;
+    Signal(Signal&&) = delete;
+    Signal& operator=(Signal&&) = delete;
+
     template<typename... Args>
     void emit(Args&&... args) const
     {
