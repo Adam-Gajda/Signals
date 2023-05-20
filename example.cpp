@@ -38,17 +38,19 @@ int main()
     Example* example = new Example();
 
     SignalGuard functorGuard = signal.connect(Functor{});
-    auto disconnectLambda = signal.connect([](std::string_view x) { std::cout << "Lambda: " << x << '\n'; });
-    auto disconnectFunction = signal.connect(function);
-    auto disconnectFunctionPtr = signal.connect(functionPtr);
+    SignalGuard lamdaGuard = signal.connect([](std::string_view x) { std::cout << "Lambda: " << x << '\n'; });
+    SignalGuard funtionGuard = signal.connect(function);
+    {
+        SignalGuard funtionPtrGuard = signal.connect(functionPtr);
+        funtionPtrGuard.detach();
+    }
     signal.emit("First Call");
 
     std::cout << "\nDisconnects\n\n";
     functorGuard.disconnect();
-    disconnectLambda();
-    disconnectFunction();
+    lamdaGuard.disconnect();
+    funtionGuard.disconnect();
 
-    // disconnectFunctor(); throws bad_function_call
     signal.emit("Second Call");
     std::cout << '\n';
     delete example;// Method disconnected

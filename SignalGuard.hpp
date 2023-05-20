@@ -17,6 +17,7 @@ public:
     SignalGuard& operator=(SignalGuard&& other) noexcept;
 
     void disconnect();
+    void detach();
 
 private:
     Disconnector callableDisconnect = nullptr;

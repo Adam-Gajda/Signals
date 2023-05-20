@@ -1,5 +1,4 @@
 #include "SignalGuard.hpp"
-#include <iostream>
 #include <utility>
 
 SignalGuard::SignalGuard(Disconnector&& callableDisconnect) : callableDisconnect{ std::move(callableDisconnect) }
@@ -29,4 +28,9 @@ void SignalGuard::disconnect()
         callableDisconnect();
         callableDisconnect = nullptr;
     }
+}
+
+void SignalGuard::detach()
+{
+    callableDisconnect = nullptr;
 }

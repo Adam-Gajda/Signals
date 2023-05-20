@@ -1,11 +1,10 @@
 #pragma once
+#include "SignalGuard.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <deque>
 #include <functional>
 #include <utility>
-
-using Disconnector = std::function<void()>;
 
 template<typename Callable>
 class Signal final
@@ -27,12 +26,12 @@ public:
         }
     }
 
-    [[maybe_unused]] Disconnector connect(Callable&& callable)
+    [[nodiscard]] SignalGuard connect(Callable&& callable)
     {
         callableWrappers.emplace_back(std::move(callable), idCounter);
 
         const std::size_t disconnectId = idCounter++;
-        return [this, disconnectId]() {
+        return SignalGuard([this, disconnectId]() {
             const auto it = std::find_if(callableWrappers.cbegin(),
               callableWrappers.cend(),
               [disconnectId](const auto& callableWrapper) { return callableWrapper.id == disconnectId; });
@@ -41,15 +40,15 @@ public:
                 throw std::bad_function_call{};
             }
             callableWrappers.erase(it);
-        };
+        });
     }
 
-    [[maybe_unused]] Disconnector connect(const Callable& callable)
+    [[nodiscard]] SignalGuard connect(const Callable& callable)
     {
         callableWrappers.emplace_back(callable, idCounter);
 
         const std::size_t disconnectId = idCounter++;
-        return [this, disconnectId]() {
+        return SignalGuard([this, disconnectId]() {
             const auto it = std::find_if(callableWrappers.cbegin(),
               callableWrappers.cend(),
               [disconnectId](const auto& callableWrapper) { return callableWrapper.id == disconnectId; });
@@ -58,7 +57,7 @@ public:
                 throw std::bad_function_call{};
             }
             callableWrappers.erase(it);
-        };
+        });
     }
 
 private:
